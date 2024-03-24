@@ -1,32 +1,19 @@
-﻿# Function to check if TeamViewer or TeamViewer Host is installed
+# Function to check if TeamViewer or TeamViewer Host is installed
 function IsTeamViewerInstalled() {
     try {
-        $z = 'TeamViewer'
-        
-        foreach ($h in 'HKLM') {
-            foreach ($x in 'SOFTWARE', 'SOFTWARE\wow6432node') {
-                $installedSoftware = Get-ItemProperty -Path "${h}:\$x\Microsoft\Windows\CurrentVersion\Uninstall\*" -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like "*$z*" }
-
-                if ($installedSoftware) {
-                    Write-Output "TeamViewer or TeamViewer Host is installed."
-                    return $true
-                }
-            }
-        }
-
-        Write-Output "TeamViewer or TeamViewer Host is not installed."
-        return $false
+        $regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*"
+        $installedSoftware = Get-ItemProperty -Path $regPath | Where-Object { $_.DisplayName -like "*TeamViewer*" }
+        return $installedSoftware -ne $null
     } catch {
-        Write-Output "Error occurred: $_"
         return $false
     }
 }
 
 # Check if TeamViewer or TeamViewer Host is installed
 if (IsTeamViewerInstalled) {
-    Write-Output "TeamViewer or TeamViewer Host detected."
+    Write-Output "TeamViewer or TeamViewer Host is installed."
     exit 1  # Detected
 } else {
-    Write-Output "TeamViewer or TeamViewer Host not detected."
+    Write-Output "TeamViewer or TeamViewer Host is not installed."
     exit 0  # Not Detected
 }
